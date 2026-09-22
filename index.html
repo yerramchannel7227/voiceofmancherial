@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="te">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YERRAM CHANNEL | Voice of the People</title>
+<meta name="description" content="YERRAM CHANNEL - మంచిర్యాల & తెలంగాణ తాజా వార్తలు">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Telugu",sans-serif;background:#f4f5f7;color:#111}
+header{background:#c40000;color:#fff;padding:16px 5%;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:27px;font-weight:900}.tag{font-size:13px}
+nav{background:#111;padding:12px 5%;display:flex;gap:20px;overflow:auto}nav a{color:#fff;text-decoration:none;white-space:nowrap;font-weight:700}
+main{width:92%;max-width:1150px;margin:24px auto}.hero,.panel,.card{background:#fff;border-radius:14px;box-shadow:0 2px 10px #0001}
+.hero,.panel{padding:22px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{overflow:hidden}.card img{width:100%;height:175px;object-fit:cover}.p{padding:14px}.cat{color:#c40000;font-size:13px;font-weight:800}
+.title{font-size:20px;font-weight:800;margin:7px 0}.meta{color:#777;font-size:12px}
+input,textarea,select{width:100%;padding:11px;margin:6px 0 14px;border:1px solid #ddd;border-radius:8px;font-size:15px}
+button{background:#c40000;color:#fff;border:0;padding:11px 18px;border-radius:8px;font-weight:700;margin-right:6px}
+.secondary{background:#444}.notice{background:#fff3cd;padding:12px;border-left:4px solid #e0a000;border-radius:6px;margin:12px 0}
+#dashboard{display:none}footer{background:#111;color:#fff;text-align:center;padding:28px;margin-top:45px}
+</style>
+</head>
+<body>
+<header><div><div class="logo">YERRAM CHANNEL</div><div class="tag">Voice of the People</div></div><a href="#admin" style="color:white">ADMIN</a></header>
+<nav>
+<a href="#home">హోమ్</a><a href="#mancherial">మంచిర్యాల</a><a href="#telangana">తెలంగాణ</a><a href="#politics">రాజకీయాలు</a><a href="#crime">క్రైమ్</a><a href="#devotional">ఆధ్యాత్మికం</a><a href="#videos">వీడియోలు</a>
+</nav>
+<main id="home">
+<section class="hero"><h1>YERRAM CHANNEL</h1><p>మంచిర్యాల & తెలంగాణ తాజా వార్తలు</p><div class="notice">Voice of the People • Local News Portal</div></section>
+<h2>తాజా వార్తలు</h2><div id="news" class="grid"></div>
+<section class="panel" id="admin">
+<h2>Admin Login</h2>
+<div id="login"><label>Username</label><input id="u" placeholder="Username"><label>Password</label><input id="pw" type="password" placeholder="Password"><button onclick="login()">Login</button><span id="msg"></span></div>
+<div id="dashboard">
+<div class="notice">ఇది demo publishing మాత్రమే. నిజమైన public online publishing కోసం server/database backend అవసరం.</div>
+<label>Headline</label><input id="h" placeholder="వార్త శీర్షిక">
+<label>Category</label><select id="c"><option>మంచిర్యాల</option><option>తెలంగాణ</option><option>రాజకీయాలు</option><option>క్రైమ్</option><option>ఆధ్యాత్మికం</option><option>వీడియోలు</option></select>
+<label>Reporter</label><input id="r" value="Prabhakar Yerram">
+<label>Photo</label><input id="ph" type="file" accept="image/*" capture="environment">
+<label>News Matter</label><textarea id="m" rows="7" placeholder="వార్త పూర్తి వివరాలు..."></textarea>
+<button onclick="publish()">Publish News</button><button class="secondary" onclick="logout()">Logout</button>
+</div>
+</section>
+</main>
+<footer>© 2026 YERRAM CHANNEL • Voice of the People</footer>
+<script>
+const KEY="yerram_channel_news";
+function esc(s){return String(s).replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[x]));}
+function render(){const data=JSON.parse(localStorage.getItem(KEY)||"[]"),box=document.getElementById("news");if(!data.length){box.innerHTML='<div class="panel">ఇంకా వార్తలు publish కాలేదు.</div>';return}box.innerHTML=data.map(n=>'<article class="card">'+(n.photo?'<img src="'+n.photo+'">':'')+'<div class="p"><div class="cat">'+esc(n.c)+'</div><div class="title">'+esc(n.h)+'</div><div>'+esc(n.m).slice(0,250)+'...</div><div class="meta">'+esc(n.r)+' • '+esc(n.d)+'</div></div></article>').join("");}
+function login(){if(document.getElementById("u").value==="admin"&&document.getElementById("pw").value==="yerram123"){localStorage.setItem("yc_admin","1");showDashboard()}else document.getElementById("msg").textContent=" Login details తప్పు."}
+function showDashboard(){document.getElementById("login").style.display="none";document.getElementById("dashboard").style.display="block"}
+function logout(){localStorage.removeItem("yc_admin");location.reload()}
+async function publish(){const headline=document.getElementById("h").value.trim(),matter=document.getElementById("m").value.trim();if(!headline||!matter){alert("Headline మరియు News Matter ఇవ్వండి");return}let photo="";const file=document.getElementById("ph").files[0];if(file)photo=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.readAsDataURL(file)});const data=JSON.parse(localStorage.getItem(KEY)||"[]");data.unshift({h:headline,c:document.getElementById("c").value,r:document.getElementById("r").value||"YERRAM CHANNEL",m:matter,photo:photo,d:new Date().toLocaleString("te-IN")});localStorage.setItem(KEY,JSON.stringify(data));document.getElementById("h").value="";document.getElementById("m").value="";document.getElementById("ph").value="";render();alert("News publish అయింది (demo mode).")}
+if(localStorage.getItem("yc_admin")==="1")showDashboard();render();
+</script>
+</body>
+</html>
