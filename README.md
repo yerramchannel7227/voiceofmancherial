@@ -1,0 +1,2 @@
+# voiceofmancherial
+only for news
